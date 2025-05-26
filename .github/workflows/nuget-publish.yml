@@ -1,0 +1,42 @@
+name: Publish NuGet Package
+
+on:
+    push:
+        tags:
+            - 'v*.*.*' # Trigger khi push tag version (v1.0.0, v1.2.3, etc.)
+
+    # Hoặc trigger thủ công
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Version to publish'
+                required: true
+                default: '1.0.0'
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: '8.0.x' # Hoặc version bạn đang dùng
+
+            - name: Restore dependencies
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build --configuration Release --no-restore
+
+            - name: Test
+              run: dotnet test --configuration Release --no-build --verbosity normal
+
+            - name: Pack
+              run: dotnet pack --configuration Release --no-build --output ./nupkg
+
+            - name: Publish to NuGet
+              run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

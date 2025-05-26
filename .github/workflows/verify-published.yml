@@ -1,0 +1,61 @@
+name: Verify Published Package
+
+on:
+    workflow_run:
+        workflows: ['Publish NuGet Package']
+        types:
+            - completed
+
+jobs:
+    verify:
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+        steps:
+            - name: Extract version from tag
+              id: version
+              run: |
+                  if [[ "${{ github.event.workflow_run.head_branch }}" =~ v([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+                    echo "VERSION=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Wait for package indexing
+              run: sleep 300 # Đợi 5 phút cho package được index
+
+            - name: Verify package availability
+              run: |
+                  PACKAGE_NAME="FSRS.Core"
+                  VERSION="${{ steps.version.outputs.VERSION }}"
+
+                  # Kiểm tra package có tồn tại
+                  for i in {1..12}; do  # Thử 12 lần, mỗi lần cách 30s
+                    echo "Attempt $i: Checking package availability..."
+                    
+                    if curl -s "https://api.nuget.org/v3-flatcontainer/$PACKAGE_NAME/index.json" | grep -q "$VERSION"; then
+                      echo "✅ Package $PACKAGE_NAME:$VERSION is available!"
+                      break
+                    fi
+                    
+                    if [ $i -eq 12 ]; then
+                      echo "❌ Package not available after 6 minutes"
+                      exit 1
+                    fi
+                    
+                    echo "Package not ready, waiting 30 seconds..."
+                    sleep 30
+                  done
+
+            - name: Test package installation
+              run: |
+                  mkdir test-project
+                  cd test-project
+                  dotnet new console
+                  dotnet add package FSRS.Core --version ${{ steps.version.outputs.VERSION }}
+                  dotnet build
+
+                  if [ $? -eq 0 ]; then
+                    echo "✅ Package installation and build successful"
+                  else
+                    echo "❌ Package installation or build failed"
+                    exit 1
+                  fi
