@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- Package Metadata -->
+        <PackageId>FSRS.Core</PackageId>
+        <Title>FSRS - Free Spaced Repetition Scheduler</Title>
+        <Version>1.0.0</Version>
+        <Authors>Tran Phuc Tien</Authors>
+        <Description>Free Spaced Repetition Scheduler (FSRS) implementation</Description>
+        <PackageTags>spaced-repetition;fsrs;memory;learning;</PackageTags>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <Copyright>Copyright © 2025 TranPhucTien</Copyright>
+
+        <!-- Package README -->
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+
+        <!-- Release Notes -->
+        <PackageReleaseNotes>
+            v1.0.0:
+            - Initial release of FSRS.Core
+            - Full FSRS algorithm implementation
+            - Dependency injection support
+            - Comprehensive unit tests
+            - Support for custom parameters and configurations
+        </PackageReleaseNotes>
+
+        <!-- Build Settings -->
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <!-- Target Frameworks for broader compatibility -->
+        <TargetFrameworks>net8.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
+    </ItemGroup>
+
+    <!-- Include package assets -->
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+</Project>
