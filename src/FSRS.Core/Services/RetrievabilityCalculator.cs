@@ -18,7 +18,7 @@ public class RetrievabilityCalculator : IRetrievabilityCalculator
 
         var decay = -parameters[20];
         var factor = Math.Pow(0.9, 1.0 / decay) - 1;
-        var elapsedDays = Math.Max(0, (currentDateTime.Value - card.LastReview.Value).Days);
+        var elapsedDays = Math.Max(0, (currentDateTime.Value - card.LastReview.Value).TotalDays);
 
         return Math.Pow(1 + factor * elapsedDays / card.Stability!.Value, decay);
     }
